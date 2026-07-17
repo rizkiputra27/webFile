@@ -1,61 +1,221 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Upload File</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin — Upload File</title>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 p-10">
-    <div class="max-w-md mx-auto bg-white p-8 rounded shadow">
-        <h1 class="text-2xl font-bold mb-6 text-center">Upload File Baru</h1>
-        <form id="uploadForm" class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium">Password Admin</label>
-                <input type="password" id="password" required class="w-full mt-1 p-2 border rounded">
-            </div>
-            <div>
-                <label class="block text-sm font-medium">Nama File</label>
-                <input type="text" id="filename" required class="w-full mt-1 p-2 border rounded">
-            </div>
-            <div>
-                <label class="block text-sm font-medium">Link Google Drive</label>
-                <input type="url" id="gdriveLink" required class="w-full mt-1 p-2 border rounded" placeholder="https://drive.google.com/file/d/...">
-            </div>
-            <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Upload</button>
-        </form>
-        <p id="status" class="mt-4 text-center text-sm font-medium"></p>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+
+  <div class="w-full max-w-md">
+
+    <!-- LOGIN CARD -->
+    <div id="loginCard" class="bg-white rounded-2xl shadow-lg p-8">
+      <h1 class="text-2xl font-bold text-slate-800 mb-1">Admin Login</h1>
+      <p class="text-slate-500 text-sm mb-6">Enter the admin password to manage shared files.</p>
+
+      <div id="loginError" class="hidden mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
+
+      <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
+      <input
+        id="passwordInput"
+        type="password"
+        placeholder="••••••••"
+        class="w-full mb-4 px-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+
+      <button
+        id="loginBtn"
+        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition"
+      >
+        Login
+      </button>
     </div>
 
-    <script>
-        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const statusLabel = document.getElementById('status');
-            statusLabel.textContent = "Mengupload...";
-            statusLabel.className = "mt-4 text-center text-sm font-medium text-blue-600";
+    <!-- UPLOAD CARD (hidden until logged in) -->
+    <div id="uploadCard" class="hidden bg-white rounded-2xl shadow-lg p-8">
+      <div class="flex items-center justify-between mb-1">
+        <h1 class="text-2xl font-bold text-slate-800">Add a File</h1>
+        <a href="/" class="text-sm text-indigo-600 hover:underline">View public page →</a>
+      </div>
+      <p class="text-slate-500 text-sm mb-6">Paste a Google Drive share link — file or folder.</p>
 
-            const data = {
-                password: document.getElementById('password').value,
-                filename: document.getElementById('filename').value,
-                gdriveLink: document.getElementById('gdriveLink').value
-            };
+      <div id="formError" class="hidden mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
+      <div id="formSuccess" class="hidden mb-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2"></div>
 
-            const res = await fetch('/api/upload', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
+      <label class="block text-sm font-medium text-slate-700 mb-1">File Name</label>
+      <input
+        id="filenameInput"
+        type="text"
+        placeholder="e.g. Project Report.pdf"
+        class="w-full mb-4 px-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
 
-            const result = await res.json();
-            if (res.ok) {
-                statusLabel.textContent = result.message;
-                statusLabel.className = "mt-4 text-center text-sm font-medium text-green-600";
-                document.getElementById('uploadForm').reset();
-            } else {
-                statusLabel.textContent = result.error;
-                statusLabel.className = "mt-4 text-center text-sm font-medium text-red-600";
-            }
-        });
-    </script>
+      <label class="block text-sm font-medium text-slate-700 mb-1">Google Drive Link</label>
+      <input
+        id="driveLinkInput"
+        type="text"
+        placeholder="https://drive.google.com/file/d/..."
+        class="w-full mb-6 px-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+
+      <button
+        id="submitBtn"
+        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition"
+      >
+        Submit
+      </button>
+
+      <hr class="my-6 border-slate-200" />
+
+      <h2 class="text-sm font-semibold text-slate-600 mb-3">Recently Added</h2>
+      <ul id="recentList" class="space-y-2 text-sm text-slate-600"></ul>
+    </div>
+
+  </div>
+
+<script>
+  let ADMIN_PASSWORD = null; // kept in memory only after a successful login
+
+  const loginCard = document.getElementById('loginCard');
+  const uploadCard = document.getElementById('uploadCard');
+  const loginError = document.getElementById('loginError');
+  const passwordInput = document.getElementById('passwordInput');
+  const loginBtn = document.getElementById('loginBtn');
+
+  const formError = document.getElementById('formError');
+  const formSuccess = document.getElementById('formSuccess');
+  const filenameInput = document.getElementById('filenameInput');
+  const driveLinkInput = document.getElementById('driveLinkInput');
+  const submitBtn = document.getElementById('submitBtn');
+  const recentList = document.getElementById('recentList');
+
+  function hide(el) { el.classList.add('hidden'); }
+  function show(el) { el.classList.remove('hidden'); }
+
+  async function login() {
+    hide(loginError);
+    const password = passwordInput.value;
+
+    if (!password) {
+      loginError.textContent = 'Please enter a password.';
+      show(loginError);
+      return;
+    }
+
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'Checking...';
+
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        ADMIN_PASSWORD = password;
+        hide(loginCard);
+        show(uploadCard);
+        loadRecent();
+      } else {
+        loginError.textContent = data.message || 'Incorrect password.';
+        show(loginError);
+      }
+    } catch (err) {
+      loginError.textContent = 'Something went wrong. Please try again.';
+      show(loginError);
+    } finally {
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'Login';
+    }
+  }
+
+  async function submitFile() {
+    hide(formError);
+    hide(formSuccess);
+
+    const filename = filenameInput.value.trim();
+    const driveLink = driveLinkInput.value.trim();
+
+    if (!filename || !driveLink) {
+      formError.textContent = 'Both fields are required.';
+      show(formError);
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Saving...';
+
+    try {
+      const res = await fetch('/api/files', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: ADMIN_PASSWORD, filename, driveLink }),
+      });
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        formSuccess.textContent = `Added "${data.file.filename}" successfully.`;
+        show(formSuccess);
+        filenameInput.value = '';
+        driveLinkInput.value = '';
+        loadRecent();
+      } else {
+        formError.textContent = data.error || 'Failed to save file.';
+        show(formError);
+      }
+    } catch (err) {
+      formError.textContent = 'Something went wrong. Please try again.';
+      show(formError);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit';
+    }
+  }
+
+  async function loadRecent() {
+    recentList.innerHTML = '<li class="text-slate-400">Loading...</li>';
+    try {
+      const res = await fetch('/api/files?t=' + new Date().getTime());
+      const files = await res.json();
+
+      if (!Array.isArray(files) || files.length === 0) {
+        recentList.innerHTML = '<li class="text-slate-400">No files yet.</li>';
+        return;
+      }
+
+      recentList.innerHTML = files
+        .slice()
+        .reverse()
+        .slice(0, 5)
+        .map(
+          (f) => `
+          <li class="flex items-center justify-between bg-slate-50 rounded-lg px-3 py-2">
+            <span class="truncate">${escapeHtml(f.filename)}</span>
+            <span class="text-xs uppercase tracking-wide text-indigo-500 ml-2">${escapeHtml(f.type)}</span>
+          </li>`
+        )
+        .join('');
+    } catch (err) {
+      recentList.innerHTML = '<li class="text-red-500">Failed to load recent files.</li>';
+    }
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str ?? '';
+    return div.innerHTML;
+  }
+
+  loginBtn.addEventListener('click', login);
+  passwordInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') login(); });
+
+  submitBtn.addEventListener('click', submitFile);
+  driveLinkInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitFile(); });
+</script>
+
 </body>
 </html>
