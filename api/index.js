@@ -14,8 +14,8 @@ app.use(bodyParser.json());
 // CONFIG — replace these placeholders with your own values (or use env vars)
 // ---------------------------------------------------------------------------
 const ADMIN_PASSWORD = 'admin123';
-const JSONBIN_BIN_ID = 'YOUR_BIN_ID_HERE';       // <-- placeholder: JSONBin Bin ID
-const JSONBIN_API_KEY = 'YOUR_MASTER_KEY_HERE';  // <-- placeholder: JSONBin X-Master-Key
+const JSONBIN_BIN_ID = 'Y$2a$10$RuHmWMlay8IR8zzI/vZ.deL2xeX1Z7wmYzJ43N.nHSMeXrFuAjiQi';       // <-- placeholder: JSONBin Bin ID
+const JSONBIN_API_KEY = '$2a$10$RuHmWMlay8IR8zzI/vZ.deL2xeX1Z7wmYzJ43N.nHSMeXrFuAjiQi';  // <-- placeholder: JSONBin X-Master-Key
 
 const JSONBIN_BASE_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
 
