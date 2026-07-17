@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Upload File</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-10">
+    <div class="max-w-md mx-auto bg-white p-8 rounded shadow">
+        <h1 class="text-2xl font-bold mb-6 text-center">Upload File Baru</h1>
+        <form id="uploadForm" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium">Password Admin</label>
+                <input type="password" id="password" required class="w-full mt-1 p-2 border rounded">
+            </div>
+            <div>
+                <label class="block text-sm font-medium">Nama File</label>
+                <input type="text" id="filename" required class="w-full mt-1 p-2 border rounded">
+            </div>
+            <div>
+                <label class="block text-sm font-medium">Link Google Drive</label>
+                <input type="url" id="gdriveLink" required class="w-full mt-1 p-2 border rounded" placeholder="https://drive.google.com/file/d/...">
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Upload</button>
+        </form>
+        <p id="status" class="mt-4 text-center text-sm font-medium"></p>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const statusLabel = document.getElementById('status');
+            statusLabel.textContent = "Mengupload...";
+            statusLabel.className = "mt-4 text-center text-sm font-medium text-blue-600";
+
+            const data = {
+                password: document.getElementById('password').value,
+                filename: document.getElementById('filename').value,
+                gdriveLink: document.getElementById('gdriveLink').value
+            };
+
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await res.json();
+            if (res.ok) {
+                statusLabel.textContent = result.message;
+                statusLabel.className = "mt-4 text-center text-sm font-medium text-green-600";
+                document.getElementById('uploadForm').reset();
+            } else {
+                statusLabel.textContent = result.error;
+                statusLabel.className = "mt-4 text-center text-sm font-medium text-red-600";
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pusat Unduhan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-center mb-8">Daftar File Tersedia</h1>
+        <div id="fileList" class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <p class="text-gray-500 text-center col-span-full">Memuat data file...</p>
+        </div>
+    </div>
+
+    <script>
+        async function loadFiles() {
+            try {
+                const res = await fetch('/api/files');
+                const files = await res.json();
+                const container = document.getElementById('fileList');
+                container.innerHTML = '';
+
+                if (files.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500 text-center col-span-full">Belum ada file yang diupload.</p>';
+                    return;
+                }
+
+                files.forEach(file => {
+                    const card = document.createElement('div');
+                    card.className = "bg-white p-6 rounded-lg shadow border flex flex-col justify-between";
+                    
+                    const btnColor = file.type === 'Folder' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-green-600 hover:bg-green-700';
+                    const btnText = file.type === 'Folder' ? 'Buka Folder' : 'Download';
+
+                    card.innerHTML = `
+                        <div>
+                            <span class="text-xs font-semibold text-gray-500 uppercase">${file.type}</span>
+                            <h2 class="text-lg font-bold mb-4 break-words">${file.filename}</h2>
+                        </div>
+                        <a href="${file.downloadUrl}" target="_blank" class="text-center block w-full text-white p-2 rounded transition ${btnColor}">
+                            ${btnText}
+                        </a>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                document.getElementById('fileList').innerHTML = '<p class="text-red-500 text-center col-span-full">Gagal memuat data.</p>';
+            }
+        }
+
+        loadFiles();
+    </script>
+</body>
+</html>
