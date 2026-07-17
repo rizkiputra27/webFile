@@ -17,7 +17,7 @@
     <script>
         async function loadFiles() {
             try {
-                const res = await fetch('/api/files');
+                const res = await fetch('/api/files?t=' + new Date().getTime());
                 const files = await res.json();
                 const container = document.getElementById('fileList');
                 container.innerHTML = '';
