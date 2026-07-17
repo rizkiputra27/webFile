@@ -7,16 +7,16 @@
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
-
+ 
   <div class="w-full max-w-md">
-
+ 
     <!-- LOGIN CARD -->
     <div id="loginCard" class="bg-white rounded-2xl shadow-lg p-8">
       <h1 class="text-2xl font-bold text-slate-800 mb-1">Admin Login</h1>
       <p class="text-slate-500 text-sm mb-6">Enter the admin password to manage shared files.</p>
-
+ 
       <div id="loginError" class="hidden mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
-
+ 
       <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
       <input
         id="passwordInput"
@@ -24,7 +24,7 @@
         placeholder="••••••••"
         class="w-full mb-4 px-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
       />
-
+ 
       <button
         id="loginBtn"
         class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition"
@@ -32,7 +32,7 @@
         Login
       </button>
     </div>
-
+ 
     <!-- UPLOAD CARD (hidden until logged in) -->
     <div id="uploadCard" class="hidden bg-white rounded-2xl shadow-lg p-8">
       <div class="flex items-center justify-between mb-1">
@@ -40,10 +40,10 @@
         <a href="/" class="text-sm text-indigo-600 hover:underline">View public page →</a>
       </div>
       <p class="text-slate-500 text-sm mb-6">Paste a Google Drive share link — file or folder.</p>
-
+ 
       <div id="formError" class="hidden mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
       <div id="formSuccess" class="hidden mb-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2"></div>
-
+ 
       <label class="block text-sm font-medium text-slate-700 mb-1">File Name</label>
       <input
         id="filenameInput"
@@ -51,7 +51,7 @@
         placeholder="e.g. Project Report.pdf"
         class="w-full mb-4 px-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
       />
-
+ 
       <label class="block text-sm font-medium text-slate-700 mb-1">Google Drive Link</label>
       <input
         id="driveLinkInput"
@@ -59,54 +59,94 @@
         placeholder="https://drive.google.com/file/d/..."
         class="w-full mb-6 px-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
       />
-
+ 
       <button
         id="submitBtn"
         class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition"
       >
         Submit
       </button>
-
+ 
       <hr class="my-6 border-slate-200" />
-
-      <h2 class="text-sm font-semibold text-slate-600 mb-3">Recently Added</h2>
+ 
+      <h2 class="text-sm font-semibold text-slate-600 mb-3">Kelola File</h2>
       <ul id="recentList" class="space-y-2 text-sm text-slate-600"></ul>
     </div>
-
+ 
   </div>
-
+ 
+  <!-- EDIT MODAL -->
+  <div id="editModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+      <h2 class="text-lg font-bold text-slate-800 mb-4">Edit File</h2>
+ 
+      <div id="editError" class="hidden mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
+ 
+      <label class="block text-sm font-medium text-slate-700 mb-1">File Name</label>
+      <input
+        id="editFilenameInput"
+        type="text"
+        class="w-full mb-4 px-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+ 
+      <label class="block text-sm font-medium text-slate-700 mb-1">Google Drive Link</label>
+      <input
+        id="editDriveLinkInput"
+        type="text"
+        class="w-full mb-6 px-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+ 
+      <div class="flex gap-3">
+        <button id="editCancelBtn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-lg transition">
+          Batal
+        </button>
+        <button id="editSaveBtn" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition">
+          Simpan
+        </button>
+      </div>
+    </div>
+  </div>
+ 
 <script>
   let ADMIN_PASSWORD = null; // kept in memory only after a successful login
-
+ 
   const loginCard = document.getElementById('loginCard');
   const uploadCard = document.getElementById('uploadCard');
   const loginError = document.getElementById('loginError');
   const passwordInput = document.getElementById('passwordInput');
   const loginBtn = document.getElementById('loginBtn');
-
+ 
   const formError = document.getElementById('formError');
   const formSuccess = document.getElementById('formSuccess');
   const filenameInput = document.getElementById('filenameInput');
   const driveLinkInput = document.getElementById('driveLinkInput');
   const submitBtn = document.getElementById('submitBtn');
   const recentList = document.getElementById('recentList');
-
+ 
+  const editModal = document.getElementById('editModal');
+  const editError = document.getElementById('editError');
+  const editFilenameInput = document.getElementById('editFilenameInput');
+  const editDriveLinkInput = document.getElementById('editDriveLinkInput');
+  const editCancelBtn = document.getElementById('editCancelBtn');
+  const editSaveBtn = document.getElementById('editSaveBtn');
+  let editingId = null;
+ 
   function hide(el) { el.classList.add('hidden'); }
   function show(el) { el.classList.remove('hidden'); }
-
+ 
   async function login() {
     hide(loginError);
     const password = passwordInput.value;
-
+ 
     if (!password) {
       loginError.textContent = 'Please enter a password.';
       show(loginError);
       return;
     }
-
+ 
     loginBtn.disabled = true;
     loginBtn.textContent = 'Checking...';
-
+ 
     try {
       const res = await fetch('/api/login', {
         method: 'POST',
@@ -114,7 +154,7 @@
         body: JSON.stringify({ password }),
       });
       const data = await res.json();
-
+ 
       if (res.ok && data.success) {
         ADMIN_PASSWORD = password;
         hide(loginCard);
@@ -132,23 +172,23 @@
       loginBtn.textContent = 'Login';
     }
   }
-
+ 
   async function submitFile() {
     hide(formError);
     hide(formSuccess);
-
+ 
     const filename = filenameInput.value.trim();
     const driveLink = driveLinkInput.value.trim();
-
+ 
     if (!filename || !driveLink) {
       formError.textContent = 'Both fields are required.';
       show(formError);
       return;
     }
-
+ 
     submitBtn.disabled = true;
     submitBtn.textContent = 'Saving...';
-
+ 
     try {
       const res = await fetch('/api/files', {
         method: 'POST',
@@ -156,7 +196,7 @@
         body: JSON.stringify({ password: ADMIN_PASSWORD, filename, driveLink }),
       });
       const data = await res.json();
-
+ 
       if (res.ok && data.success) {
         formSuccess.textContent = `Added "${data.file.filename}" successfully.`;
         show(formSuccess);
@@ -175,47 +215,152 @@
       submitBtn.textContent = 'Submit';
     }
   }
-
+ 
+  let currentFiles = [];
+ 
   async function loadRecent() {
-    recentList.innerHTML = '<li class="text-slate-400">Loading...</li>';
+    recentList.innerHTML = '<li class="text-slate-400">Memuat...</li>';
     try {
       const res = await fetch('/api/files?t=' + new Date().getTime());
       const files = await res.json();
-
-      if (!Array.isArray(files) || files.length === 0) {
-        recentList.innerHTML = '<li class="text-slate-400">No files yet.</li>';
+      currentFiles = Array.isArray(files) ? files : [];
+ 
+      if (currentFiles.length === 0) {
+        recentList.innerHTML = '<li class="text-slate-400">Belum ada file.</li>';
         return;
       }
-
-      recentList.innerHTML = files
+ 
+      recentList.innerHTML = currentFiles
         .slice()
         .reverse()
-        .slice(0, 5)
         .map(
           (f) => `
-          <li class="flex items-center justify-between bg-slate-50 rounded-lg px-3 py-2">
-            <span class="truncate">${escapeHtml(f.filename)}</span>
-            <span class="text-xs uppercase tracking-wide text-indigo-500 ml-2">${escapeHtml(f.type)}</span>
+          <li class="flex items-center justify-between gap-2 bg-slate-50 rounded-lg px-3 py-2">
+            <div class="min-w-0 flex-1">
+              <div class="truncate font-medium text-slate-700">${escapeHtml(f.filename)}</div>
+              <div class="text-xs uppercase tracking-wide text-indigo-500">${escapeHtml(f.type)}</div>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+              <button data-edit-id="${escapeHtml(f.id)}" class="edit-btn px-2.5 py-1.5 text-xs font-medium rounded-md bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition">
+                Edit
+              </button>
+              <button data-delete-id="${escapeHtml(f.id)}" class="delete-btn px-2.5 py-1.5 text-xs font-medium rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition">
+                Hapus
+              </button>
+            </div>
           </li>`
         )
         .join('');
+ 
+      // Wire up the newly rendered buttons.
+      recentList.querySelectorAll('.edit-btn').forEach((btn) => {
+        btn.addEventListener('click', () => openEditModal(btn.getAttribute('data-edit-id')));
+      });
+      recentList.querySelectorAll('.delete-btn').forEach((btn) => {
+        btn.addEventListener('click', () => deleteFile(btn.getAttribute('data-delete-id')));
+      });
     } catch (err) {
-      recentList.innerHTML = '<li class="text-red-500">Failed to load recent files.</li>';
+      recentList.innerHTML = '<li class="text-red-500">Gagal memuat daftar file.</li>';
     }
   }
-
+ 
+  function openEditModal(id) {
+    const file = currentFiles.find((f) => f.id === id);
+    if (!file) return;
+ 
+    editingId = id;
+    hide(editError);
+    editFilenameInput.value = file.filename;
+    // Show original drive link if we can reconstruct it, otherwise the stored downloadUrl.
+    editDriveLinkInput.value = file.downloadUrl;
+    show(editModal);
+  }
+ 
+  function closeEditModal() {
+    hide(editModal);
+    editingId = null;
+  }
+ 
+  async function saveEdit() {
+    hide(editError);
+    const filename = editFilenameInput.value.trim();
+    const driveLink = editDriveLinkInput.value.trim();
+ 
+    if (!filename || !driveLink) {
+      editError.textContent = 'Kedua kolom wajib diisi.';
+      show(editError);
+      return;
+    }
+ 
+    editSaveBtn.disabled = true;
+    editSaveBtn.textContent = 'Menyimpan...';
+ 
+    try {
+      const res = await fetch('/api/files/' + encodeURIComponent(editingId), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: ADMIN_PASSWORD, filename, driveLink }),
+      });
+      const data = await res.json();
+ 
+      if (res.ok && data.success) {
+        closeEditModal();
+        loadRecent();
+      } else {
+        editError.textContent = data.error || 'Gagal menyimpan perubahan.';
+        show(editError);
+      }
+    } catch (err) {
+      editError.textContent = 'Terjadi kesalahan. Coba lagi.';
+      show(editError);
+    } finally {
+      editSaveBtn.disabled = false;
+      editSaveBtn.textContent = 'Simpan';
+    }
+  }
+ 
+  async function deleteFile(id) {
+    const file = currentFiles.find((f) => f.id === id);
+    const label = file ? file.filename : 'file ini';
+ 
+    if (!confirm(`Hapus "${label}"? Tindakan ini tidak bisa dibatalkan.`)) {
+      return;
+    }
+ 
+    try {
+      const res = await fetch('/api/files/' + encodeURIComponent(id), {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: ADMIN_PASSWORD }),
+      });
+      const data = await res.json();
+ 
+      if (res.ok && data.success) {
+        loadRecent();
+      } else {
+        alert(data.error || 'Gagal menghapus file.');
+      }
+    } catch (err) {
+      alert('Terjadi kesalahan. Coba lagi.');
+    }
+  }
+ 
   function escapeHtml(str) {
     const div = document.createElement('div');
     div.textContent = str ?? '';
     return div.innerHTML;
   }
-
+ 
   loginBtn.addEventListener('click', login);
   passwordInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') login(); });
-
+ 
   submitBtn.addEventListener('click', submitFile);
   driveLinkInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitFile(); });
+ 
+  editCancelBtn.addEventListener('click', closeEditModal);
+  editSaveBtn.addEventListener('click', saveEdit);
+  editModal.addEventListener('click', (e) => { if (e.target === editModal) closeEditModal(); });
 </script>
-
+ 
 </body>
 </html>
