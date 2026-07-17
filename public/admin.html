@@ -1,128 +1,347 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Admin — Upload File</title>
-<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F6F5F1;
+    --card: #FFFFFF;
+    --ink: #1C1E1A;
+    --ink-soft: #6E7168;
+    --line: #E4E1D6;
+    --line-strong: #CFCBBB;
+    --accent: #1F6F54;
+    --accent-dark: #16513E;
+    --accent-soft: #E6F0EA;
+    --stamp: #B25E20;
+    --danger: #A33B2A;
+    --danger-soft: #F5E7E3;
+    --link-soft: #EFEEE8;
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 48px 20px;
+  }
+
+  .hidden { display: none !important; }
+  .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+  a { color: inherit; text-decoration: none; }
+
+  .shell { width: 100%; max-width: 460px; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 32px;
+  }
+
+  .eyebrow-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 10px;
+  }
+
+  .eyebrow-tag .dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  }
+
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    margin: 0 0 6px;
+  }
+
+  .subtitle {
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    margin: 0 0 24px;
+  }
+
+  .field { margin-bottom: 18px; }
+
+  label {
+    display: block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+
+  input[type="text"],
+  input[type="password"] {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid var(--line-strong);
+    padding: 9px 2px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14.5px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  input[type="text"]:focus,
+  input[type="password"]:focus {
+    border-color: var(--accent);
+  }
+
+  input::placeholder { color: #B4B1A5; }
+
+  .btn {
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    transition: background 0.15s ease, opacity 0.15s ease;
+  }
+
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-dark); }
+  .btn-primary:disabled { opacity: 0.6; cursor: default; }
+
+  .btn-ghost {
+    background: var(--link-soft);
+    color: var(--ink);
+  }
+  .btn-ghost:hover { background: var(--line); }
+
+  .alert {
+    font-size: 13px;
+    padding: 10px 13px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+  }
+  .alert-error { color: var(--danger); background: var(--danger-soft); }
+  .alert-success { color: var(--accent-dark); background: var(--accent-soft); }
+
+  .top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  .back-link {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+  }
+  .back-link:hover { color: var(--accent); }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 26px 0 18px;
+  }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 12px;
+  }
+
+  /* ---------- Manifest rows ---------- */
+  #recentList { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+
+  .manifest-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 11px 12px;
+  }
+
+  .manifest-info { min-width: 0; flex: 1; }
+
+  .manifest-name {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .manifest-type {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-dark);
+    margin-top: 2px;
+  }
+
+  .manifest-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+  .chip-btn {
+    border: none;
+    cursor: pointer;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.03em;
+    padding: 7px 10px;
+    border-radius: 8px;
+    transition: opacity 0.15s ease;
+  }
+  .chip-btn:hover { opacity: 0.8; }
+  .chip-edit { background: var(--accent-soft); color: var(--accent-dark); }
+  .chip-delete { background: var(--danger-soft); color: var(--danger); }
+
+  .muted-row { color: var(--ink-soft); font-size: 13px; padding: 10px 2px; }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(28, 30, 26, 0.45);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    z-index: 50;
+  }
+
+  .modal-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 28px;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .modal-actions { display: flex; gap: 10px; margin-top: 22px; }
+  .modal-actions .btn { flex: 1; }
+</style>
 </head>
-<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
- 
-  <div class="w-full max-w-md">
- 
+<body>
+
+  <div class="shell">
+
     <!-- LOGIN CARD -->
-    <div id="loginCard" class="bg-white rounded-2xl shadow-lg p-8">
-      <h1 class="text-2xl font-bold text-slate-800 mb-1">Admin Login</h1>
-      <p class="text-slate-500 text-sm mb-6">Enter the admin password to manage shared files.</p>
- 
-      <div id="loginError" class="hidden mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
- 
-      <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
-      <input
-        id="passwordInput"
-        type="password"
-        placeholder="••••••••"
-        class="w-full mb-4 px-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      />
- 
-      <button
-        id="loginBtn"
-        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition"
-      >
-        Login
-      </button>
-    </div>
- 
-    <!-- UPLOAD CARD (hidden until logged in) -->
-    <div id="uploadCard" class="hidden bg-white rounded-2xl shadow-lg p-8">
-      <div class="flex items-center justify-between mb-1">
-        <h1 class="text-2xl font-bold text-slate-800">Add a File</h1>
-        <a href="/" class="text-sm text-indigo-600 hover:underline">View public page →</a>
+    <div id="loginCard" class="card">
+      <div class="eyebrow-tag"><span class="dot"></span>AKSES TERBATAS</div>
+      <h1>Admin Login</h1>
+      <p class="subtitle">Masukkan password admin untuk mengelola file yang dibagikan.</p>
+
+      <div id="loginError" class="alert alert-error hidden"></div>
+
+      <div class="field">
+        <label>Password</label>
+        <input id="passwordInput" type="password" placeholder="••••••••" />
       </div>
-      <p class="text-slate-500 text-sm mb-6">Paste a Google Drive share link — file or folder.</p>
- 
-      <div id="formError" class="hidden mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
-      <div id="formSuccess" class="hidden mb-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2"></div>
- 
-      <label class="block text-sm font-medium text-slate-700 mb-1">File Name</label>
-      <input
-        id="filenameInput"
-        type="text"
-        placeholder="e.g. Project Report.pdf"
-        class="w-full mb-4 px-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      />
- 
-      <label class="block text-sm font-medium text-slate-700 mb-1">Google Drive Link</label>
-      <input
-        id="driveLinkInput"
-        type="text"
-        placeholder="https://drive.google.com/file/d/..."
-        class="w-full mb-6 px-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      />
- 
-      <button
-        id="submitBtn"
-        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition"
-      >
-        Submit
-      </button>
- 
-      <hr class="my-6 border-slate-200" />
- 
-      <h2 class="text-sm font-semibold text-slate-600 mb-3">Kelola File</h2>
-      <ul id="recentList" class="space-y-2 text-sm text-slate-600"></ul>
+
+      <button id="loginBtn" class="btn btn-primary">Login</button>
     </div>
- 
+
+    <!-- UPLOAD CARD -->
+    <div id="uploadCard" class="card hidden">
+      <div class="top-row">
+        <div class="eyebrow-tag"><span class="dot"></span>PANEL ADMIN</div>
+        <a href="/" class="back-link">Lihat halaman publik →</a>
+      </div>
+      <h1>Tambah File</h1>
+      <p class="subtitle">Tempel link Google Drive — file atau folder.</p>
+
+      <div id="formError" class="alert alert-error hidden"></div>
+      <div id="formSuccess" class="alert alert-success hidden"></div>
+
+      <div class="field">
+        <label>Nama File</label>
+        <input id="filenameInput" type="text" placeholder="mis. Laporan Proyek.pdf" />
+      </div>
+
+      <div class="field">
+        <label>Google Drive Link</label>
+        <input id="driveLinkInput" type="text" placeholder="https://drive.google.com/file/d/..." />
+      </div>
+
+      <button id="submitBtn" class="btn btn-primary">Submit</button>
+
+      <hr class="divider" />
+
+      <div class="section-label">Kelola File</div>
+      <ul id="recentList"></ul>
+    </div>
+
   </div>
- 
+
   <!-- EDIT MODAL -->
-  <div id="editModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
-      <h2 class="text-lg font-bold text-slate-800 mb-4">Edit File</h2>
- 
-      <div id="editError" class="hidden mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
- 
-      <label class="block text-sm font-medium text-slate-700 mb-1">File Name</label>
-      <input
-        id="editFilenameInput"
-        type="text"
-        class="w-full mb-4 px-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      />
- 
-      <label class="block text-sm font-medium text-slate-700 mb-1">Google Drive Link</label>
-      <input
-        id="editDriveLinkInput"
-        type="text"
-        class="w-full mb-6 px-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      />
- 
-      <div class="flex gap-3">
-        <button id="editCancelBtn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-lg transition">
-          Batal
-        </button>
-        <button id="editSaveBtn" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition">
-          Simpan
-        </button>
+  <div id="editModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="eyebrow-tag"><span class="dot"></span>EDIT ENTRI</div>
+      <h1 style="font-size:19px;">Edit File</h1>
+
+      <div id="editError" class="alert alert-error hidden" style="margin-top:14px;"></div>
+
+      <div class="field" style="margin-top:16px;">
+        <label>Nama File</label>
+        <input id="editFilenameInput" type="text" />
+      </div>
+
+      <div class="field">
+        <label>Google Drive Link</label>
+        <input id="editDriveLinkInput" type="text" />
+      </div>
+
+      <div class="modal-actions">
+        <button id="editCancelBtn" class="btn btn-ghost">Batal</button>
+        <button id="editSaveBtn" class="btn btn-primary">Simpan</button>
       </div>
     </div>
   </div>
- 
+
 <script>
   let ADMIN_PASSWORD = null; // kept in memory only after a successful login
- 
+
   const loginCard = document.getElementById('loginCard');
   const uploadCard = document.getElementById('uploadCard');
   const loginError = document.getElementById('loginError');
   const passwordInput = document.getElementById('passwordInput');
   const loginBtn = document.getElementById('loginBtn');
- 
+
   const formError = document.getElementById('formError');
   const formSuccess = document.getElementById('formSuccess');
   const filenameInput = document.getElementById('filenameInput');
   const driveLinkInput = document.getElementById('driveLinkInput');
   const submitBtn = document.getElementById('submitBtn');
   const recentList = document.getElementById('recentList');
- 
+
   const editModal = document.getElementById('editModal');
   const editError = document.getElementById('editError');
   const editFilenameInput = document.getElementById('editFilenameInput');
@@ -130,23 +349,23 @@
   const editCancelBtn = document.getElementById('editCancelBtn');
   const editSaveBtn = document.getElementById('editSaveBtn');
   let editingId = null;
- 
+
   function hide(el) { el.classList.add('hidden'); }
   function show(el) { el.classList.remove('hidden'); }
- 
+
   async function login() {
     hide(loginError);
     const password = passwordInput.value;
- 
+
     if (!password) {
-      loginError.textContent = 'Please enter a password.';
+      loginError.textContent = 'Silakan masukkan password.';
       show(loginError);
       return;
     }
- 
+
     loginBtn.disabled = true;
-    loginBtn.textContent = 'Checking...';
- 
+    loginBtn.textContent = 'Memeriksa...';
+
     try {
       const res = await fetch('/api/login', {
         method: 'POST',
@@ -154,41 +373,41 @@
         body: JSON.stringify({ password }),
       });
       const data = await res.json();
- 
+
       if (res.ok && data.success) {
         ADMIN_PASSWORD = password;
         hide(loginCard);
         show(uploadCard);
         loadRecent();
       } else {
-        loginError.textContent = data.message || 'Incorrect password.';
+        loginError.textContent = data.message || 'Password salah.';
         show(loginError);
       }
     } catch (err) {
-      loginError.textContent = 'Something went wrong. Please try again.';
+      loginError.textContent = 'Terjadi kesalahan. Coba lagi.';
       show(loginError);
     } finally {
       loginBtn.disabled = false;
       loginBtn.textContent = 'Login';
     }
   }
- 
+
   async function submitFile() {
     hide(formError);
     hide(formSuccess);
- 
+
     const filename = filenameInput.value.trim();
     const driveLink = driveLinkInput.value.trim();
- 
+
     if (!filename || !driveLink) {
-      formError.textContent = 'Both fields are required.';
+      formError.textContent = 'Kedua kolom wajib diisi.';
       show(formError);
       return;
     }
- 
+
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Saving...';
- 
+    submitBtn.textContent = 'Menyimpan...';
+
     try {
       const res = await fetch('/api/files', {
         method: 'POST',
@@ -196,63 +415,58 @@
         body: JSON.stringify({ password: ADMIN_PASSWORD, filename, driveLink }),
       });
       const data = await res.json();
- 
+
       if (res.ok && data.success) {
-        formSuccess.textContent = `Added "${data.file.filename}" successfully.`;
+        formSuccess.textContent = `Berhasil menambahkan "${data.file.filename}".`;
         show(formSuccess);
         filenameInput.value = '';
         driveLinkInput.value = '';
         loadRecent();
       } else {
-        formError.textContent = data.error || 'Failed to save file.';
+        formError.textContent = data.error || 'Gagal menyimpan file.';
         show(formError);
       }
     } catch (err) {
-      formError.textContent = 'Something went wrong. Please try again.';
+      formError.textContent = 'Terjadi kesalahan. Coba lagi.';
       show(formError);
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = 'Submit';
     }
   }
- 
+
   let currentFiles = [];
- 
+
   async function loadRecent() {
-    recentList.innerHTML = '<li class="text-slate-400">Memuat...</li>';
+    recentList.innerHTML = '<li class="muted-row">Memuat...</li>';
     try {
       const res = await fetch('/api/files?t=' + new Date().getTime());
       const files = await res.json();
       currentFiles = Array.isArray(files) ? files : [];
- 
+
       if (currentFiles.length === 0) {
-        recentList.innerHTML = '<li class="text-slate-400">Belum ada file.</li>';
+        recentList.innerHTML = '<li class="muted-row">Belum ada file.</li>';
         return;
       }
- 
+
       recentList.innerHTML = currentFiles
         .slice()
         .reverse()
         .map(
           (f) => `
-          <li class="flex items-center justify-between gap-2 bg-slate-50 rounded-lg px-3 py-2">
-            <div class="min-w-0 flex-1">
-              <div class="truncate font-medium text-slate-700">${escapeHtml(f.filename)}</div>
-              <div class="text-xs uppercase tracking-wide text-indigo-500">${escapeHtml(f.type)}</div>
+          <li class="manifest-row">
+            <div class="manifest-info">
+              <div class="manifest-name" title="${escapeHtml(f.filename)}">${escapeHtml(f.filename)}</div>
+              <div class="manifest-type">${escapeHtml(f.type)}</div>
             </div>
-            <div class="flex items-center gap-1 shrink-0">
-              <button data-edit-id="${escapeHtml(f.id)}" class="edit-btn px-2.5 py-1.5 text-xs font-medium rounded-md bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition">
-                Edit
-              </button>
-              <button data-delete-id="${escapeHtml(f.id)}" class="delete-btn px-2.5 py-1.5 text-xs font-medium rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition">
-                Hapus
-              </button>
+            <div class="manifest-actions">
+              <button data-edit-id="${escapeHtml(f.id)}" class="chip-btn chip-edit edit-btn">Edit</button>
+              <button data-delete-id="${escapeHtml(f.id)}" class="chip-btn chip-delete delete-btn">Hapus</button>
             </div>
           </li>`
         )
         .join('');
- 
-      // Wire up the newly rendered buttons.
+
       recentList.querySelectorAll('.edit-btn').forEach((btn) => {
         btn.addEventListener('click', () => openEditModal(btn.getAttribute('data-edit-id')));
       });
@@ -260,41 +474,40 @@
         btn.addEventListener('click', () => deleteFile(btn.getAttribute('data-delete-id')));
       });
     } catch (err) {
-      recentList.innerHTML = '<li class="text-red-500">Gagal memuat daftar file.</li>';
+      recentList.innerHTML = '<li class="muted-row" style="color:var(--danger);">Gagal memuat daftar file.</li>';
     }
   }
- 
+
   function openEditModal(id) {
     const file = currentFiles.find((f) => f.id === id);
     if (!file) return;
- 
+
     editingId = id;
     hide(editError);
     editFilenameInput.value = file.filename;
-    // Show original drive link if we can reconstruct it, otherwise the stored downloadUrl.
     editDriveLinkInput.value = file.downloadUrl;
     show(editModal);
   }
- 
+
   function closeEditModal() {
     hide(editModal);
     editingId = null;
   }
- 
+
   async function saveEdit() {
     hide(editError);
     const filename = editFilenameInput.value.trim();
     const driveLink = editDriveLinkInput.value.trim();
- 
+
     if (!filename || !driveLink) {
       editError.textContent = 'Kedua kolom wajib diisi.';
       show(editError);
       return;
     }
- 
+
     editSaveBtn.disabled = true;
     editSaveBtn.textContent = 'Menyimpan...';
- 
+
     try {
       const res = await fetch('/api/files/' + encodeURIComponent(editingId), {
         method: 'PUT',
@@ -302,7 +515,7 @@
         body: JSON.stringify({ password: ADMIN_PASSWORD, filename, driveLink }),
       });
       const data = await res.json();
- 
+
       if (res.ok && data.success) {
         closeEditModal();
         loadRecent();
@@ -318,15 +531,15 @@
       editSaveBtn.textContent = 'Simpan';
     }
   }
- 
+
   async function deleteFile(id) {
     const file = currentFiles.find((f) => f.id === id);
     const label = file ? file.filename : 'file ini';
- 
+
     if (!confirm(`Hapus "${label}"? Tindakan ini tidak bisa dibatalkan.`)) {
       return;
     }
- 
+
     try {
       const res = await fetch('/api/files/' + encodeURIComponent(id), {
         method: 'DELETE',
@@ -334,7 +547,7 @@
         body: JSON.stringify({ password: ADMIN_PASSWORD }),
       });
       const data = await res.json();
- 
+
       if (res.ok && data.success) {
         loadRecent();
       } else {
@@ -344,23 +557,23 @@
       alert('Terjadi kesalahan. Coba lagi.');
     }
   }
- 
+
   function escapeHtml(str) {
     const div = document.createElement('div');
     div.textContent = str ?? '';
     return div.innerHTML;
   }
- 
+
   loginBtn.addEventListener('click', login);
   passwordInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') login(); });
- 
+
   submitBtn.addEventListener('click', submitFile);
   driveLinkInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitFile(); });
- 
+
   editCancelBtn.addEventListener('click', closeEditModal);
   editSaveBtn.addEventListener('click', saveEdit);
   editModal.addEventListener('click', (e) => { if (e.target === editModal) closeEditModal(); });
 </script>
- 
+
 </body>
 </html>
