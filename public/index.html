@@ -1,46 +1,295 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Shared Files</title>
-<script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-slate-100 min-h-screen">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F6F5F1;
+    --card: #FFFFFF;
+    --ink: #1C1E1A;
+    --ink-soft: #6E7168;
+    --line: #E4E1D6;
+    --line-strong: #CFCBBB;
+    --accent: #1F6F54;
+    --accent-dark: #16513E;
+    --accent-soft: #E6F0EA;
+    --stamp: #B25E20;
+    --stamp-soft: #F3E7D8;
+    --link-soft: #EFEEE8;
+    --radius: 16px;
+  }
 
-  <header class="bg-white border-b border-slate-200">
-    <div class="max-w-5xl mx-auto px-4 py-6 flex items-center justify-between">
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .hidden { display: none !important; }
+
+  .mono {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  /* ---------- Header ---------- */
+  header {
+    border-bottom: 1px solid var(--line);
+    background: var(--paper);
+  }
+
+  .header-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 32px 24px 28px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .wordmark {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .wordmark-mark {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .wordmark-mark svg { width: 16px; height: 16px; }
+
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+
+  .header-sub {
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    margin-top: 4px;
+  }
+
+  .admin-link {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    border: 1px solid var(--line-strong);
+    padding: 8px 14px;
+    border-radius: 999px;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .admin-link:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+    background: var(--link-soft);
+  }
+
+  /* ---------- Main ---------- */
+  main {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 36px 24px 80px;
+  }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 24px;
+  }
+
+  .eyebrow-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .state-box {
+    text-align: center;
+    padding: 90px 20px;
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+
+  .state-box.error { color: #A33B2A; }
+
+  /* ---------- Grid & Ticket Cards ---------- */
+  .file-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 18px;
+  }
+
+  .ticket {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+
+  .ticket:hover {
+    border-color: var(--line-strong);
+    transform: translateY(-2px);
+  }
+
+  .ticket-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 4px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .badge.file { background: var(--accent-soft); color: var(--accent-dark); }
+  .badge.folder { background: var(--stamp-soft); color: var(--stamp); }
+  .badge.link { background: var(--link-soft); color: var(--ink-soft); }
+
+  .ticket-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 15.5px;
+    line-height: 1.35;
+    word-break: break-word;
+    margin-bottom: 4px;
+  }
+
+  .stub-divider {
+    position: relative;
+    border-top: 1.5px dashed var(--line-strong);
+    margin: 16px -20px 16px;
+    height: 0;
+  }
+
+  .stub-divider::before,
+  .stub-divider::after {
+    content: '';
+    position: absolute;
+    top: -8px;
+    width: 16px;
+    height: 16px;
+    background: var(--paper);
+    border-radius: 50%;
+  }
+
+  .stub-divider::before { left: -8px; }
+  .stub-divider::after { right: -8px; }
+
+  .download-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    font-size: 13.5px;
+    padding: 11px;
+    border-radius: 10px;
+    transition: background 0.15s ease;
+  }
+
+  .download-btn:hover { background: var(--accent-dark); }
+  .download-btn svg { width: 14px; height: 14px; }
+
+  footer {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 24px 48px;
+    color: var(--ink-soft);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.02em;
+  }
+</style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
       <div>
-        <h1 class="text-2xl font-bold text-slate-800">Shared Files</h1>
-        <p class="text-slate-500 text-sm mt-1">Files and folders shared via Google Drive.</p>
+        <div class="wordmark">
+          <div class="wordmark-mark">
+            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 6.5L10 2l7 4.5v7L10 18l-7-4.5v-7z" stroke="#F6F5F1" stroke-width="1.4" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h1>Shared Files</h1>
+        </div>
+        <p class="header-sub">Berkas dan folder yang dibagikan lewat Google Drive.</p>
       </div>
-      <a href="/admin" class="text-sm text-slate-400 hover:text-indigo-600 transition">Admin</a>
+      <a href="/admin" class="admin-link">Admin →</a>
     </div>
   </header>
 
-  <main class="max-w-5xl mx-auto px-4 py-10">
-
-    <div id="loadingState" class="text-center text-slate-400 py-16">
-      Loading files...
+  <main>
+    <div id="eyebrow" class="eyebrow hidden">
+      <span class="eyebrow-dot"></span>
+      <span id="eyebrowText">0 FILE TERSEDIA</span>
     </div>
 
-    <div id="emptyState" class="hidden text-center text-slate-400 py-16">
-      No files have been shared yet.
-    </div>
+    <div id="loadingState" class="state-box">Memuat daftar file…</div>
+    <div id="emptyState" class="state-box hidden">Belum ada file yang dibagikan.</div>
+    <div id="errorState" class="state-box error hidden">Gagal memuat file. Coba muat ulang halaman.</div>
 
-    <div id="errorState" class="hidden text-center text-red-500 py-16">
-      Failed to load files. Please refresh the page.
-    </div>
-
-    <div id="fileGrid" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
-
+    <div id="fileGrid" class="file-grid hidden"></div>
   </main>
+
+  <footer>Berkas dihosting di Google Drive — unduhan diarahkan langsung ke Drive.</footer>
 
 <script>
   const loadingState = document.getElementById('loadingState');
   const emptyState = document.getElementById('emptyState');
   const errorState = document.getElementById('errorState');
   const fileGrid = document.getElementById('fileGrid');
+  const eyebrow = document.getElementById('eyebrow');
+  const eyebrowText = document.getElementById('eyebrowText');
 
   function escapeHtml(str) {
     const div = document.createElement('div');
@@ -48,11 +297,10 @@
     return div.innerHTML;
   }
 
-  function iconFor(type) {
-    if (type === 'folder') {
-      return `<svg class="w-6 h-6 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>`;
-    }
-    return `<svg class="w-6 h-6 text-indigo-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/></svg>`;
+  function badgeFor(type) {
+    const cls = type === 'folder' ? 'folder' : type === 'link' ? 'link' : 'file';
+    const label = type === 'folder' ? 'Folder' : type === 'link' ? 'Link' : 'File';
+    return `<span class="badge ${cls}">${label}</span>`;
   }
 
   function renderFiles(files) {
@@ -62,24 +310,24 @@
       return;
     }
 
+    eyebrowText.textContent = `${files.length} FILE TERSEDIA`;
+    eyebrow.classList.remove('hidden');
+
     fileGrid.innerHTML = files
       .map(
         (f) => `
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex flex-col justify-between hover:shadow-md transition">
-          <div class="flex items-start gap-3 mb-4">
-            <div class="shrink-0 bg-slate-50 rounded-lg p-2">${iconFor(f.type)}</div>
-            <div class="min-w-0">
-              <h2 class="font-semibold text-slate-800 truncate" title="${escapeHtml(f.filename)}">${escapeHtml(f.filename)}</h2>
-              <p class="text-xs uppercase tracking-wide text-slate-400 mt-0.5">${escapeHtml(f.type || 'file')}</p>
-            </div>
+        <div class="ticket">
+          <div class="ticket-top">
+            ${badgeFor(f.type)}
           </div>
-          <a
-            href="${escapeHtml(f.downloadUrl)}"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-2 rounded-lg transition"
-          >
-            Download
+          <div class="ticket-name" title="${escapeHtml(f.filename)}">${escapeHtml(f.filename)}</div>
+          <div style="flex:1"></div>
+          <div class="stub-divider"></div>
+          <a href="${escapeHtml(f.downloadUrl)}" target="_blank" rel="noopener noreferrer" class="download-btn">
+            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 3v10m0 0l-4-4m4 4l4-4M4 16.5h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Unduh
           </a>
         </div>`
       )
@@ -91,7 +339,7 @@
 
   async function loadFiles() {
     try {
-      // Cache-busting timestamp param avoids Vercel's aggressive edge caching.
+      // Parameter timestamp untuk menghindari cache agresif Vercel.
       const res = await fetch('/api/files?t=' + new Date().getTime());
       if (!res.ok) throw new Error('Bad response');
       const files = await res.json();
